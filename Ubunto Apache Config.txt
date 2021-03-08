@@ -188,7 +188,9 @@ GRANT ALL PRIVILEGES ON pimcore.* TO 'pimcoreuser'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 
+# INSTALING PIMCORE
 
+// https://websiteforstudents.com/install-pimcore-platform-on-ubuntu-16-04-18-04-18-10-with-apache2-mariadb-and-php-7-2/?fbclid=IwAR1WBHG-d24s0gRVRkoCnb4fqByMvK8wbF9RAjhOoZ6n4S6kYT_-T0sHG-Y
 
 // domain.conf
 <VirtualHost *:80>
