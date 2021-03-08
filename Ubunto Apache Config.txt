@@ -1,0 +1,216 @@
+﻿# Install Apache using Ubuntu’s package manager, apt:
+sudo apt update
+sudo apt install apache2
+
+# Adjust the Firewall to Allow Web Traffic
+sudo ufw app list
+sudo ufw app info "Apache Full"
+sudo ufw allow in "Apache Full"
+
+#How To Find your Server’s Public IP Address
+sudo apt install curl
+curl http://icanhazip.com
+
+# Installing MySQL
+sudo apt install mysql-server
+sudo mysql_secure_installation
+sudo mysql
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+FLUSH PRIVILEGES;
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+exit
+
+# Installing PHP
+sudo apt install php libapache2-mod-php php-mysql
+sudo nano /etc/apache2/mods-enabled/dir.conf
+sudo systemctl restart apache2
+sudo systemctl status apache2
+# Mpdules
+apt search php- | less
+
+apt install libphp-magpierss
+apt install libphp-jpgraph
+apt install libphp-adodb
+apt install php-all-dev
+apt install php-bz2
+apt install php-cli
+apt install php-common
+apt install php-date
+apt install php-db
+apt install php-fpdf
+apt install php-gmagick
+apt install php-image-text
+apt install php-json
+apt install php-mbstring
+apt install php-parser
+
+# PIMCORE: Required Settings and Modules & Extensions
+memory_limit >= 128M
+upload_max_filesize and post_max_size >= 100M (depending on your data)
+
+# pdo_mysql or mysqli
+
+# iconv
+
+# dom
+
+# simplexml
+
+# gd
+
+# exif
+
+# file_info
+
+# mbstring
+
+# zlib
+
+# zip
+
+# intl
+sudo apt-get install php-intl
+
+# opcache
+
+# curl
+sudo apt install curl
+
+# CLI SAPI (for Cron Jobs)
+
+# Composer (added to $PATH - see also Additional Tools Installation)
+sudo apt update
+sudo apt install php-cli unzip
+cd ~
+curl -sS https://getcomposer.org/installer -o composer-setup.php
+HASH=`curl -sS https://composer.github.io/installer.sig`
+echo $HASH
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+composer
+
+# Recommended Modules & Extensions
+# imagick (if not installed gd is used instead, but with less supported image types)
+apt install php-imagick
+# phpredis (recommended cache backend adapter)
+sudo apt install php-redis
+# graphviz (for rendering workflow overview)
+sudo apt install graphviz
+
+# ------------------------
+# Setting Up Virtual Hosts
+
+# CREATE DOMAIN DIRECTORY
+sudo mkdir /var/www/my_domain
+
+# Assign ownership
+sudo chown -R $USER:$USER /var/www/my_domain
+
+# Set permissions
+sudo chmod -R 755 /var/www/my_domain
+
+# Create a simple hmtl page 
+nano /var/www/my_domain/index.html
+
+# In order for Apache to serve this content, it’s necessary to create a virtual host file 
+# with the correct directives. 
+# Instead of modifying the default configuration file located 
+# at /etc/apache2/sites-available/000-default.conf directly, 
+# let’s make a new one at /etc/apache2/sites-available/your_domain.conf:
+
+sudo nano /etc/apache2/sites-available/my_domain.conf
+	<VirtualHost *:80>
+	    ServerAdmin webmaster@localhost
+	    ServerName my_domain
+	    ServerAlias local.my_domain
+	    DocumentRoot /var/www/my_domain
+	    ErrorLog ${APACHE_LOG_DIR}/error.log
+	    CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+
+# Apache2 Enable Site 
+sudo a2ensite my_domain.conf
+
+# Apache2 Disable Default site
+sudo a2dissite 000-default.conf
+
+# Check Config
+sudo apache2ctl configtest
+	Synatx should be:
+		Output
+		Syntax OK
+
+# Restart Apache2 Service to apply the changes
+sudo systemctl restart apache2
+
+# ---------------------
+# Installing phpMyAdmin
+
+sudo apt update
+sudo apt install phpmyadmin php-mbstring php-gettext
+sudo phpenmod mbstring
+sudo systemctl restart apache2
+
+# Adjusting User Authentication and Privileges
+CREATE USER 'sammy'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'sammy'@'localhost' WITH GRANT OPTION;
+exit
+
+# Securing Your phpMyAdmin Instance
+sudo nano /etc/apache2/conf-available/phpmyadmin.conf
+	<Directory /usr/share/phpmyadmin>
+	    Options FollowSymLinks
+	    DirectoryIndex index.php
+	    AllowOverride All
+
+sudo nano /usr/share/phpmyadmin/.htaccess
+	AuthType Basic
+	AuthName "Restricted Files"
+	AuthUserFile /etc/phpmyadmin/.htpasswd
+	Require valid-user
+		AuthType Basic: This line specifies the authentication type that you are implementing. This type will implement password authentication using a password file.
+		AuthName: This sets the message for the authentication dialog box. You should keep this generic so that unauthorized users won’t gain any information about what is being protected.
+		AuthUserFile: This sets the location of the password file that will be used for authentication. This should be outside of the directories that are being served. We will create this file shortly.
+		Require valid-user: This specifies that only authenticated users should be given access to this resource. This is what actually stops unauthorized users from entering.
+
+sudo htpasswd -c /etc/phpmyadmin/.htpasswd user
+
+#For additional users
+sudo htpasswd /etc/phpmyadmin/.htpasswd additionaluser
+
+
+//
+CREATE DATABASE pimcore;
+CREATE USER 'pimcoreuser'@'localhost' IDENTIFIED BY 'new_password_here';
+GRANT ALL ON pimcore.* TO 'pimcoreuser'@'localhost' IDENTIFIED BY 'user_password_here' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON pimcore.* TO 'pimcoreuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+
+// domain.conf
+<VirtualHost *:80>
+	    ServerAdmin admin@localhost
+	    ServerName localpimcore.local
+	    ServerAlias www.localpimcore.local
+	    DocumentRoot /var/www/pimcore/pimcore/web
+
+           <Directory /var/www/pimcore/pimcore/web/>
+             Options FollowSymlinks
+             AllowOverride All
+             Require all granted
+            </Directory>
+
+
+	    ErrorLog ${APACHE_LOG_DIR}/error.log
+	    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	    <Directory /var/www/html/pimcore/web/>
+             RewriteEngine on
+             RewriteBase /
+             RewriteCond %{REQUEST_FILENAME} !-f
+             RewriteRule ^(.*) index.php [PT,L]
+	    </Directory>
+</VirtualHost>
