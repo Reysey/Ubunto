@@ -18,6 +18,11 @@ sudo mysql
 SELECT user,authentication_string,plugin,host FROM mysql.user;
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
 FLUSH PRIVILEGES;
+
+CREATE USER 'reysey'@'localhost' IDENTIFIED BY 'reysey';
+GRANT ALL PRIVILEGES ON *.* TO 'reysey'@'localhost';
+FLUSH PRIVILEGES;
+
 SELECT user,authentication_string,plugin,host FROM mysql.user;
 exit
 
@@ -44,6 +49,9 @@ apt install php-image-text
 apt install php-json
 apt install php-mbstring
 apt install php-parser
+
+***********
+apt install libphp-magpierss libphp-jpgraph libphp-adodb php-all-dev php-bz2 php-cli php-common php-date php-db php-fpdf php-gmagick php-image-text php-json php-mbstring php-parser
 
 # PIMCORE: Required Settings and Modules & Extensions
 memory_limit >= 128M
@@ -191,6 +199,11 @@ EXIT;
 # INSTALING PIMCORE
 
 // https://websiteforstudents.com/install-pimcore-platform-on-ubuntu-16-04-18-04-18-10-with-apache2-mariadb-and-php-7-2/?fbclid=IwAR1WBHG-d24s0gRVRkoCnb4fqByMvK8wbF9RAjhOoZ6n4S6kYT_-T0sHG-Y
+
+sudo a2ensite pimcore.conf
+sudo a2enmod rewrite
+sudo systemctl restart apache2.service
+
 
 // domain.conf
 <VirtualHost *:80>
