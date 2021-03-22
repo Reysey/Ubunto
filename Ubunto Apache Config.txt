@@ -251,3 +251,15 @@ systemctl status redis
 
 Downgrade composer to 1.10.0/
 composer self-update 1.10.12
+
+MEMORY EXAUSTED >> 
+On Windows 10;
+
+Goto C:\ProgramData\ComposerSetup\bin
+
+Edit: composer.bat and add memory_limit=-1 in the last line as shown below.
+
+@echo OFF
+:: in case DelayedExpansion is on and a path contains ! 
+setlocal DISABLEDELAYEDEXPANSION
+php -d memory_limit=-1 "%~dp0composer.phar" %*
