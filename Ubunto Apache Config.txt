@@ -247,3 +247,7 @@ nano /etc/redis/redis.conf
 supervised systemd
 systemctl restart redis.service
 systemctl status redis
+
+
+Downgrade composer to 1.10.0/
+composer self-update 1.10.12
