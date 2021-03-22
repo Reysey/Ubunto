@@ -263,3 +263,20 @@ Edit: composer.bat and add memory_limit=-1 in the last line as shown below.
 :: in case DelayedExpansion is on and a path contains ! 
 setlocal DISABLEDELAYEDEXPANSION
 php -d memory_limit=-1 "%~dp0composer.phar" %*
+
+
+#Check free memory before
+free -m
+
+mkdir -p /var/_swap_
+cd /var/_swap_
+#Here, 1M * 2000 ~= 2GB of swap memory.  Feel free to add MORE
+dd if=/dev/zero of=swapfile bs=1M count=2000
+chmod 600 swapfile
+mkswap swapfile
+swapon swapfile
+#Automatically mount this swap partition at startup
+echo "/var/_swap_/swapfile none swap sw 0 0" >> /etc/fstab
+
+#Check free memory after
+free -m
