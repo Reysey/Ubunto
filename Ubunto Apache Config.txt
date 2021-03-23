@@ -344,3 +344,9 @@ echo "/var/_swap_/swapfile none swap sw 0 0" >> /etc/fstab
 
 #Check free memory after
 free -m
+
+Never set /etc to writable
+SUDO ERROR
+pkexec chmod 555 /etc/sudoers
+pkexec chmod 555 /etc/sudoers.d/README
+
