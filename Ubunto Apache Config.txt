@@ -247,7 +247,71 @@ nano /etc/redis/redis.conf
 supervised systemd
 systemctl restart redis.service
 systemctl status redis
+ps aux | grep redis
+PID issue:
+sudo mkdir /var/run/redis
+sudo chown redis /var/run/redis
 
+
+DATASOTRE ISSUE/
+
+Steps to resolve that issue:- +==============+ A. Set memory limit in redis.conf in 566 number line
+
+566 maxmemory 256mb 567 maxmemory-policy allkeys-lru
+
+B. set the Linux kernel overcommit memory setting to 1:
+
+$ sudo sysctl vm.overcommit_memory=1
+
+or /etc/sysctl.conf and change it to 1.
+
+C. Restart the redis server now.
+
+$ systemctl restart redis
+
+Please check now Redis status.
+
+And if the still issue persists then Go and edit and redis service file.
+
+========= vi /etc/systemd/system/redis.service
+
+You will see like this:-
+
+[Unit] Description=Redis In-Memory Data Store After=network.target
+
+[Service] User=root Group=root ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf ExecStop=/usr/local/bin/redis-cli shutdown Restart=always
+Type=Forking
+
+[Install] WantedBy=multi-user.target
+
+Change it ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf
+
+to
+
+ExecStart=/usr/local/bin/redis-server /etc/redis.conf
+
+Now, Start the redis service
+
+$ systemctl start redis
+
+Now Redis will start without giving any error.
+
++==============+
+
+Testing the redis:-
+
+[root@server]# redis-cli 127.0.0.1:6379> ping Use the echo command to echo a given string: 127.0.0.1:6379> echo "Tecmint is testing Redis" You can also set a key value using the set command like this: 127.0.0.1:6379> set mykey "is testing Redis" Now view the value of mykey: 127.0.0.1:6379> get mykey "is testing Redis" 127.0.0.1:6379> exit [root@server]#
+
+Now redis started successfully and running.
+
++==================+
+
+Thanks & Regards
+
+
+
+
+####
 
 Downgrade composer to 1.10.0/
 composer self-update 1.10.12
